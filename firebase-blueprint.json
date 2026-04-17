@@ -1,0 +1,86 @@
+{
+  "entities": {
+    "Post": {
+      "title": "Post",
+      "description": "A magazine article or news post.",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "The headline of the post."
+        },
+        "subtitle": {
+          "type": "string",
+          "description": "A short summary or sub-headline."
+        },
+        "content": {
+          "type": "string",
+          "description": "The main body content in Markdown format."
+        },
+        "author": {
+          "type": "string",
+          "description": "The name of the author."
+        },
+        "authorUid": {
+          "type": "string",
+          "description": "The Firebase Auth UID of the author."
+        },
+        "category": {
+          "type": "string",
+          "description": "The category of the post (e.g., Culture, Tech, Music)."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "The URL of the featured image."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the post was created."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the post was last updated."
+        },
+        "published": {
+          "type": "boolean",
+          "description": "Whether the post is published and visible to the public."
+        }
+      },
+      "required": ["title", "content", "author", "authorUid", "category", "createdAt", "published"]
+    },
+    "User": {
+      "title": "User",
+      "description": "A user profile, including admin status.",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "The user's email address."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "The user's display name."
+        },
+        "role": {
+          "type": "string",
+          "enum": ["admin", "editor", "user"],
+          "description": "The user's role in the system."
+        }
+      },
+      "required": ["email", "role"]
+    }
+  },
+  "firestore": {
+    "/posts": {
+      "schema": "Post",
+      "description": "Collection of all magazine posts."
+    },
+    "/users": {
+      "schema": "User",
+      "description": "Collection of user profiles and roles."
+    }
+  }
+}

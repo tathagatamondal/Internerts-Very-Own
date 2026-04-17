@@ -1,0 +1,91 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: posts
+    // Document ID: auto-generated
+    // Fields:
+    //   - title: string (required, 1-200 chars)
+    //   - subtitle: string (optional, 0-500 chars)
+    //   - content: string (required, 1-50000 chars)
+    //   - author: string (required, 1-100 chars)
+    //   - authorUid: string (required, matches auth.uid)
+    //   - category: string (required, enum: Culture, Tech, Music, Politics, etc.)
+    //   - imageUrl: string (optional, valid URL)
+    //   - createdAt: timestamp (required)
+    //   - updatedAt: timestamp (optional)
+    //   - published: bool (required)
+    //
+    // Collection: users
+    // Document ID: matches auth.uid
+    // Fields:
+    //   - email: string (required, valid email)
+    //   - displayName: string (optional, 0-100 chars)
+    //   - role: string (required, enum: admin, editor, user)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+        (request.auth.token.email == "tathagata2416@gmail.com" && request.auth.token.email_verified == true)
+      );
+    }
+
+    function isEditor() {
+      return isAuthenticated() && (
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'editor']
+      );
+    }
+
+    function isValidPost(data) {
+      return data.keys().hasAll(['title', 'content', 'author', 'authorUid', 'category', 'createdAt', 'published']) &&
+             data.title is string && data.title.size() > 0 && data.title.size() <= 200 &&
+             data.content is string && data.content.size() > 0 && data.content.size() <= 50000 &&
+             data.author is string && data.author.size() > 0 && data.author.size() <= 100 &&
+             data.authorUid == request.auth.uid &&
+             data.category is string &&
+             data.createdAt is timestamp &&
+             data.published is bool;
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['email', 'role']) &&
+             data.email is string &&
+             data.role in ['admin', 'editor', 'user'];
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /posts/{postId} {
+      allow read: if resource.data.published == true || isEditor();
+      allow create: if isEditor() && isValidPost(request.resource.data);
+      allow update: if isEditor() && isValidPost(request.resource.data) &&
+                    request.resource.data.createdAt == resource.data.createdAt &&
+                    request.resource.data.authorUid == resource.data.authorUid;
+      allow delete: if isAdmin();
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && isValidUser(request.resource.data) && request.resource.data.role == 'user';
+      allow update: if (isOwner(userId) && isValidUser(request.resource.data) && request.resource.data.role == resource.data.role) || isAdmin();
+    }
+  }
+}
