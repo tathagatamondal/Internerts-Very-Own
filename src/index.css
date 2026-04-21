@@ -1,96 +1,71 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap');
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Plus Jakarta Sans", sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-serif: "Merriweather", serif;
+  
+  --color-bbc: #B80000;
+  --color-bbc-dark: #8A0000;
+  --color-ink: #121212;
 }
 
 @layer base {
   :root {
     --bg: #ffffff;
-    --fg: #0a0a0a;
-    --accent: #3b82f6;
-    --accent-glow: rgba(59, 130, 246, 0.5);
-    --border: rgba(0, 0, 0, 0.08);
-    --glass-bg: rgba(255, 255, 255, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --card-bg: #f9f9fb;
-    --subtle: #f4f4f5;
+    --fg: #121212;
+    --accent: #B80000;
+    --accent-dark: #8A0000;
+    --border: #e2e2e2;
+    --subtle: #f6f6f6;
+    --card-bg: #ffffff;
   }
 
   .dark {
-    --bg: #030303;
-    --fg: #f5f5f5;
-    --accent: #60a5fa;
-    --accent-glow: rgba(96, 165, 250, 0.4);
-    --border: rgba(255, 255, 255, 0.1);
-    --glass-bg: rgba(10, 10, 10, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.05);
-    --card-bg: #0a0a0b;
-    --subtle: #18181b;
+    --bg: #0a0a0a;
+    --fg: #f6f6f6;
+    --accent: #ff4d4d;
+    --accent-dark: #cc0000;
+    --border: #222222;
+    --subtle: #121212;
+    --card-bg: #121212;
   }
 
   body {
-    @apply bg-[var(--bg)] text-[var(--fg)] antialiased transition-colors duration-500 selection:bg-[var(--accent)] selection:text-white;
+    @apply bg-[var(--bg)] text-[var(--fg)] antialiased transition-colors duration-300;
     font-family: var(--font-sans);
   }
 
-  h1, h2, h3, h4, .font-display {
-    font-family: var(--font-display);
+  h1, h2, h3, h4, .font-serif {
+    font-family: var(--font-serif);
+    @apply tracking-tight;
   }
 }
 
-@utility glass {
-  @apply backdrop-blur-xl bg-[var(--glass-bg)] border border-[var(--border)];
+@utility news-card {
+  @apply bg-[var(--card-bg)] border border-[var(--border)] overflow-hidden transition-all duration-200;
+  &:hover {
+    @apply shadow-lg border-[var(--accent)]/30;
+  }
 }
 
-@utility glass-dark {
-  @apply backdrop-blur-xl bg-black/40 border border-white/10;
+@utility bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1.5rem;
 }
 
-@utility bento-card {
-  @apply glass rounded-3xl p-8 relative overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-[var(--accent-glow)];
+@utility section-label {
+  @apply text-[10px] font-bold uppercase tracking-widest text-[var(--accent)] border-l-4 border-[var(--accent)] pl-3 mb-4 inline-block;
 }
 
-@utility text-balance {
-  text-wrap: balance;
+@utility breaking-anim {
+  animation: breaking 2s infinite;
 }
 
-@utility gradient-text {
-  @apply bg-clip-text text-transparent bg-gradient-to-br from-[var(--fg)] to-[var(--accent)];
-}
-
-@utility complex-bg {
-  background-image: 
-    radial-gradient(at 0% 0%, var(--accent-glow) 0, transparent 50%),
-    radial-gradient(at 100% 100%, var(--accent-glow) 0, transparent 50%);
-  background-attachment: fixed;
-}
-
-@utility noise {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  opacity: 0.03;
-  z-index: 9999;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-}
-
-@utility mask-fade-bottom {
-  mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
-}
-
-@utility animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
+@keyframes breaking {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
 }
 

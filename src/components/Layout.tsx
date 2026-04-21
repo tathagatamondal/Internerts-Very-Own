@@ -3,7 +3,7 @@ import { UserProfile } from '../types';
 import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
 import { useState, useEffect } from 'react';
-import { Sun, Moon, ArrowRight } from 'lucide-react';
+import { Sun, Moon, Search, Menu, X, Globe, User, LogOut, LayoutDashboard } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface LayoutProps {
@@ -20,6 +20,9 @@ export default function Layout({ userProfile }: LayoutProps) {
     return false;
   });
 
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
@@ -32,119 +35,174 @@ export default function Layout({ userProfile }: LayoutProps) {
 
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
+  const sections = ['News', 'Sport', 'Business', 'Innovation', 'Culture', 'Travel', 'Earth'];
+
   return (
-    <div className="min-h-screen complex-bg relative">
-      <div className="noise" />
-      
-      {/* Background Decorative Elements */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <motion.div 
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.1, 0.2, 0.1],
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-          className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] bg-[var(--accent)] blur-[120px] rounded-full opacity-10"
-        />
-        <motion.div 
-          animate={{
-            scale: [1.2, 1, 1.2],
-            opacity: [0.1, 0.15, 0.1],
-          }}
-          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-          className="absolute -bottom-[20%] -right-[10%] w-[50%] h-[50%] bg-[var(--accent)] blur-[100px] rounded-full opacity-10"
-        />
-      </div>
-
-      {/* Floating Modern Header */}
-      <motion.header 
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-5xl"
-      >
-        <div className="glass rounded-[2rem] px-8 py-4 flex items-center justify-between shadow-xl shadow-black/5">
-          <Link to="/" className="flex items-center space-x-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--fg)] to-[var(--accent)] flex items-center justify-center p-[1px]">
-              <div className="w-full h-full bg-[var(--bg)] rounded-[11px] flex items-center justify-center">
-                <span className="text-[var(--fg)] font-black text-xl leading-none">V</span>
-              </div>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-display font-black uppercase tracking-tighter leading-none">Internets</span>
-              <span className="text-[10px] font-mono uppercase tracking-[0.2em] opacity-40">Very_Own</span>
-            </div>
-          </Link>
-
-          <nav className="flex items-center space-x-6">
-            <div className="hidden sm:flex items-center space-x-6 mr-6 border-r border-[var(--border)] pr-6">
-              <Link to="/" className="text-[10px] font-bold uppercase tracking-widest hover:text-[var(--accent)] transition-colors">Discover</Link>
-              <a href="#" className="text-[10px] font-bold uppercase tracking-widest hover:text-[var(--accent)] transition-colors">Manifesto</a>
-            </div>
-
-            <button 
-              onClick={toggleTheme}
-              className="w-10 h-10 flex items-center justify-center rounded-xl bg-[var(--subtle)] hover:bg-[var(--accent)] hover:text-white transition-all duration-300"
-            >
-              {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-          </nav>
-        </div>
-      </motion.header>
-
-      <main className="pt-32 pb-24 relative z-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <Outlet />
-      </main>
-
-      <footer className="relative z-10 mt-12 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="glass rounded-[3rem] p-12 sm:p-20 overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-[var(--accent-glow)] to-transparent opacity-20" />
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 relative z-10">
-            <div className="space-y-8">
-              <h2 className="text-5xl sm:text-7xl font-display font-black uppercase tracking-tighter leading-[0.9] gradient-text">
-                The New <br/> Standard.
-              </h2>
-              <p className="max-w-md text-sm text-[var(--fg)]/60 leading-relaxed text-balance">
-                Creating space for the culture of the internet. A digital artifact dedicated to the visionaries, the builders, and the dreamers.
-              </p>
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 rounded-full border border-[var(--border)] flex items-center justify-center group hover:border-[var(--accent)] transition-colors cursor-pointer">
-                  <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+    <div className="min-h-screen bg-[var(--bg)] transition-colors duration-300">
+      {/* Top Branding Bar */}
+      <header className="bg-black text-white w-full sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-12 flex items-center justify-between">
+          <div className="flex items-center space-x-6">
+            <Link to="/" className="flex items-center space-x-0.5 group">
+              {['I', 'V'].map((char, i) => (
+                <span key={i} className="bg-white text-black w-6 h-6 flex items-center justify-center font-black text-xs group-hover:bg-[#B80000] group-hover:text-white transition-colors">
+                  {char}
+                </span>
+              ))}
+              <span className="ml-2 font-bold tracking-tight text-sm">NEWS</span>
+            </Link>
+            
+            <div className="hidden md:flex items-center space-x-6 text-[11px] font-bold uppercase tracking-wider h-full">
+              {userProfile ? (
+                <div className="flex items-center space-x-6">
+                  <Link to="/admin" className="flex items-center hover:text-[#B80000] transition-colors">
+                    <LayoutDashboard size={14} className="mr-2" />
+                    Dashboard
+                  </Link>
                 </div>
-                <span className="text-[10px] font-bold uppercase tracking-widest">Read our story</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-12 sm:gap-24">
-              <div className="space-y-6">
-                <span className="text-[10px] font-mono uppercase tracking-[0.3em] opacity-40">Artifacts</span>
-                <ul className="space-y-3 font-display font-bold text-sm">
-                  <li><a href="#" className="hover:text-[var(--accent)] transition-colors">Archive</a></li>
-                  <li><a href="#" className="hover:text-[var(--accent)] transition-colors">Collections</a></li>
-                  <li><a href="#" className="hover:text-[var(--accent)] transition-colors">Exhibits</a></li>
-                </ul>
-              </div>
-              <div className="space-y-6">
-                <span className="text-[10px] font-mono uppercase tracking-[0.3em] opacity-40">Legal_Protocol</span>
-                <ul className="space-y-3 font-display font-bold text-sm">
-                  <li><a href="#" className="hover:text-[var(--accent)] transition-colors">Privacy</a></li>
-                  <li><a href="#" className="hover:text-[var(--accent)] transition-colors">Terms</a></li>
-                  <li><a href="#" className="hover:text-[var(--accent)] transition-colors">Contact</a></li>
-                </ul>
-              </div>
+              ) : (
+                <Link to="/login" className="flex items-center hover:text-[#B80000] transition-colors">
+                  <User size={14} className="mr-2" />
+                  Sign In
+                </Link>
+              )}
             </div>
           </div>
 
-          <div className="mt-20 pt-12 border-t border-[var(--border)] flex flex-col sm:flex-row justify-between items-center gap-6">
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              <span className="text-[10px] font-mono uppercase tracking-widest opacity-40 text-center sm:text-left">
-                System Active // {new Date().toLocaleTimeString()}
-              </span>
+          <div className="flex items-center space-x-4">
+            <button 
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              className="p-2 hover:bg-white/10 transition-colors"
+            >
+              <Search size={18} />
+            </button>
+            <button 
+              onClick={toggleTheme}
+              className="p-2 hover:bg-white/10 transition-colors"
+            >
+              {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+            <button 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="p-2 hover:bg-white/10 transition-colors md:hidden"
+            >
+              <Menu size={18} />
+            </button>
+          </div>
+        </div>
+
+        {/* Search Overlay */}
+        <AnimatePresence>
+          {isSearchOpen && (
+            <motion.div 
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="bg-white dark:bg-[#121212] border-b border-[var(--border)] overflow-hidden"
+            >
+              <div className="max-w-3xl mx-auto px-4 py-8 relative">
+                <input 
+                  type="text" 
+                  autoFocus
+                  placeholder="Search IV News..." 
+                  className="w-full bg-[var(--subtle)] text-[var(--fg)] px-6 py-4 rounded-none border-b-2 border-black dark:border-white focus:outline-none text-2xl font-serif italic"
+                />
+                <button 
+                  onClick={() => setIsSearchOpen(false)}
+                  className="absolute right-8 top-1/2 -translate-y-1/2 text-[var(--fg)]/40 hover:text-black dark:hover:text-white"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Global Navigation Section Links */}
+        <nav className="hidden md:block bg-white dark:bg-[#0a0a0a] border-b border-[var(--border)] overflow-x-auto selection-none">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center space-x-10 h-11">
+              {sections.map((section) => (
+                <Link 
+                  key={section} 
+                  to={`#${section.toLowerCase()}`}
+                  className="text-[13px] font-bold text-[var(--fg)] hover:text-[#B80000] transition-colors whitespace-nowrap h-full flex items-center border-b-2 border-transparent hover:border-[#B80000]"
+                >
+                  {section}
+                </Link>
+              ))}
             </div>
-            <span className="text-[10px] font-mono uppercase tracking-widest opacity-40">
-              &copy; {new Date().getFullYear()} IVO_CORP // All Rights Reserved
-            </span>
+          </div>
+        </nav>
+      </header>
+
+      {/* Breaking News Bar */}
+      <div className="bg-[#B80000] text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-8 flex items-center">
+          <span className="text-[10px] font-black uppercase tracking-widest bg-white text-[#B80000] px-2 py-0.5 mr-4 breaking-anim">Breaking</span>
+          <div className="overflow-hidden flex-1 relative h-full flex items-center">
+            <motion.p 
+              animate={{ x: [800, -1000] }}
+              transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+              className="text-[11px] font-bold whitespace-nowrap"
+            >
+              Global markets react to new climate policies. • Live coverage of the International Summit. • New archaeological discovery in the Amazon forest.
+            </motion.p>
+          </div>
+        </div>
+      </div>
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Outlet />
+      </main>
+
+      {/* Global Footer */}
+      <footer className="bg-[#121212] text-gray-400 py-20 mt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-12 mb-16">
+            <div className="col-span-1 md:col-span-2">
+              <Link to="/" className="flex items-center space-x-0.5 group mb-6">
+                {['I', 'V'].map((char, i) => (
+                  <span key={i} className="bg-white text-black w-8 h-8 flex items-center justify-center font-black text-sm transition-colors">
+                    {char}
+                  </span>
+                ))}
+                <span className="ml-3 font-bold tracking-tight text-lg text-white">NEWS</span>
+              </Link>
+              <p className="text-sm max-w-sm leading-relaxed mb-6">
+                Independent, verified and around the clock. Your destination for global storytelling and world-class journalism.
+              </p>
+              <div className="flex items-center space-x-4">
+                <Globe size={18} />
+                <span className="text-xs uppercase tracking-widest font-bold">World Edition</span>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h4 className="text-white text-sm font-bold uppercase tracking-widest">Connect</h4>
+              <ul className="space-y-2 text-sm">
+                <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Newsletters</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Help</a></li>
+              </ul>
+            </div>
+
+            <div className="space-y-4">
+              <h4 className="text-white text-sm font-bold uppercase tracking-widest">About</h4>
+              <ul className="space-y-2 text-sm">
+                <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Terms of Use</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Cookies</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] font-bold uppercase tracking-[0.2em]">
+            <span>© Internets Very Own</span>
+            <div className="flex items-center space-x-8">
+              <a href="#" className="hover:text-white">Editorial Guidelines</a>
+              <a href="#" className="hover:text-white">Advertise</a>
+            </div>
           </div>
         </div>
       </footer>

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from '../firebase';
-import { LogIn, ShieldCheck, Cpu, Terminal } from 'lucide-react';
+import { LogIn, Shield, Globe, Lock } from 'lucide-react';
 import { motion } from 'motion/react';
 
 export default function Login() {
@@ -26,69 +26,56 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 relative">
-      {/* Decorative Elements */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-[40%] h-[40%] bg-[var(--accent)] blur-[150px] opacity-10 rounded-full animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-[30%] h-[30%] bg-blue-500 blur-[150px] opacity-10 rounded-full" />
-      </div>
-
+    <div className="min-h-[70vh] flex items-center justify-center px-4 relative">
       <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="max-w-md w-full glass rounded-[3rem] p-12 sm:p-20 text-center relative z-10 border border-[var(--border)] overflow-hidden group"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="max-w-md w-full bg-white dark:bg-[#121212] border border-[var(--border)] p-12 text-center shadow-2xl relative"
       >
-        <div className="absolute top-0 right-0 p-8">
-          <Terminal size={12} className="opacity-20" />
-        </div>
-        
+        {/* Branding */}
         <div className="flex justify-center mb-10">
-          <div className="relative">
-            <div className="w-20 h-20 rounded-[2.5rem] bg-gradient-to-br from-[var(--fg)] to-[var(--accent)] p-0.5 animate-float">
-              <div className="w-full h-full bg-[var(--bg)] rounded-[1.8rem] flex items-center justify-center">
-                <ShieldCheck size={32} className="text-[var(--accent)]" />
-              </div>
-            </div>
-            <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-green-500 border-4 border-[var(--bg)]" />
+          <div className="flex items-center space-x-1 group">
+            {['I', 'V'].map((char, i) => (
+              <span key={i} className="bg-black text-white dark:bg-white dark:text-black w-10 h-10 flex items-center justify-center font-black text-lg transition-colors group-hover:bg-[#B80000] group-hover:text-white">
+                {char}
+              </span>
+            ))}
+            <span className="ml-3 font-bold tracking-tight text-2xl">NEWS</span>
           </div>
         </div>
         
-        <h2 className="text-4xl font-display font-black uppercase tracking-tighter mb-4 leading-none">Identity_Check</h2>
-        <div className="flex items-center justify-center space-x-2 text-[10px] font-mono uppercase tracking-[0.4em] opacity-40 mb-14 font-black">
-          <Cpu size={12} />
-          <span>Authorization_Mandatory</span>
+        <div className="space-y-4 mb-12">
+          <h2 className="text-3xl font-serif font-black italic">Sign In</h2>
+          <p className="text-sm text-gray-500 max-w-xs mx-auto">
+            Access your personal news dashboard and independent journalism archive.
+          </p>
         </div>
 
         {error && (
-          <motion.div 
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="mb-10 p-5 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-mono uppercase tracking-widest font-bold leading-relaxed"
-          >
+          <div className="mb-8 p-4 bg-red-50 text-red-600 text-xs font-bold uppercase tracking-widest border-l-4 border-red-600">
             {error}
-          </motion.div>
+          </div>
         )}
 
         <button
           onClick={handleGoogleLogin}
           disabled={loading}
-          className="group relative w-full flex items-center justify-center space-x-4 bg-[var(--fg)] text-[var(--bg)] py-6 px-8 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 overflow-hidden"
+          className="w-full flex items-center justify-center space-x-4 bg-black text-white dark:bg-white dark:text-black py-4 px-8 font-black uppercase tracking-widest text-[11px] transition-all hover:bg-[#B80000] dark:hover:bg-[#B80000] dark:hover:text-white disabled:opacity-50 group"
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-          <LogIn size={18} className="transition-transform group-hover:scale-110" />
-          <span>{loading ? 'Processing...' : 'Authenticate_Google'}</span>
+          <LogIn size={18} className="transition-transform group-hover:translate-x-1" />
+          <span>{loading ? 'Verifying...' : 'Sign in with Google'}</span>
         </button>
 
-        <div className="mt-16 space-y-4">
-          <div className="w-12 h-0.5 bg-[var(--border)] mx-auto" />
-          <p className="text-[9px] font-mono uppercase opacity-30 leading-relaxed tracking-[0.2em] font-bold">
-            SECURE_HANDSHAKE_V2.94 <br/>
-            ENCRYPTED_SESSION_REQUIRED
+        <div className="mt-12 pt-8 border-t border-gray-100 dark:border-gray-800 space-y-6">
+          <div className="flex items-center justify-center space-x-4 text-gray-400">
+            <Shield size={16} />
+            <span className="text-[10px] font-bold uppercase tracking-widest">Secure Authentication</span>
+          </div>
+          <p className="text-[9px] text-gray-400 uppercase tracking-widest leading-relaxed">
+            By signing in, you agree to our <br/>
+            <a href="#" className="underline hover:text-black dark:hover:text-white">Terms of Service</a> & <a href="#" className="underline hover:text-black dark:hover:text-white">Privacy Policy</a>.
           </p>
         </div>
-        
-        {/* Subtle noise overlay */}
-        <div className="noise" />
       </motion.div>
     </div>
   );
